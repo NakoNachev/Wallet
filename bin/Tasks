@@ -1,0 +1,26 @@
+TODO:
+
+## Inserting data ##
+
+1. insert new account
+	1.1 error handling for already existing user
+	1.2 not allowing negative debt values
+	
+2. insert new expense_history
+	2.1 reorganize to have expense types as column
+	
+
+
+
+## Returning data ##
+
+1. current accounts overview (done)
+2. debt and balance for specific/all account/s
+3. expense_history overview for account based on month/period
+
+
+
+## Updating data ##
+
+1. change value of balance for users having expense_history
+2. 

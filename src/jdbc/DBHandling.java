@@ -46,8 +46,7 @@ public class DBHandling extends DBConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+	
 	}
 	
 	/**
@@ -81,17 +80,7 @@ public class DBHandling extends DBConnector {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		
-	}
-	
-	
-	
-	public static void main (String args[]) {
-		
-		
-		
+		}	
 	}
 	
 

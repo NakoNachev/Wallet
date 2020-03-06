@@ -34,17 +34,72 @@ public class DBResultSetHandler extends DBConnector {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}		
+	}
+	
+	/**
+	 * Returns all the account names currently available at the accounts table
+	 * @throws SQLException
+	 */
+	public void getCurrentAccounts() throws SQLException {
+		
+		String query = "select * from wallettracker.accounts";
+		
+
+			ResultSet rs = this.con.getStatement().executeQuery(query);
+			while (rs.next()) {
+				
+				System.out.println(rs.getString("accName"));
+			}
+	}
+	
+	/**
+	 * Returns the account balance for given account name
+	 * @param accName
+	 * @throws SQLException
+	 */
+	
+	public void getCurrentBalance(String accName) throws SQLException {
+		
+		PreparedStatement prQuery = null;
+		String query = "select accBalance from wallettracker.accounts where accName = ?";
+		
+		prQuery = this.con.getConnection().prepareStatement(query);
+		prQuery.setString(1, accName);
+		ResultSet rs = prQuery.executeQuery();
+		
+		while (rs.next()){
+			System.out.println(rs.getDouble("accBalance"));
 		}
-		
-		
-		
 		
 	}
 	
-	public static void main(String args[]) {
+	/**
+	 * Displays all current accounts and their balance
+	 * @throws SQLException
+	 */
+	
+	public void getCurrentBalanceAll() throws SQLException {
+		
+		String query = "select accName, accBalance from wallettracker.accounts";
+		
+		ResultSet rs = this.con.getStatement().executeQuery(query);
+		
+		while (rs.next()){
+			
+			System.out.print(rs.getString("accName") + " ");
+			System.out.print(rs.getDouble("accBalance"));
+			System.out.println();
+		}
+	}
+	
+	public static void main(String args[]) throws SQLException {
 		
 		DBResultSetHandler rsHandler = new DBResultSetHandler();
-		rsHandler.getExpenses("test", 3, 2011);
+		//rsHandler.getExpenses("test", 3, 2011);
+		rsHandler.getCurrentAccounts();
+		rsHandler.getCurrentBalance("nako");
+		rsHandler.getCurrentBalanceAll();
 	}
 
 }
