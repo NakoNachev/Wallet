@@ -1,8 +1,10 @@
 package jdbc;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 /** For handling different select statements and corresponding results to be 
@@ -14,27 +16,35 @@ public class DBResultSetHandler extends DBConnector {
 	
 	DBConnector con = new DBConnector();
 	
-	public void getExpenses(String name, int month, int year ) {
+	
+	/**
+	 * Returns the user expenses for a specific month
+	 * 
+	 * @param name
+	 * @param month
+	 * @return
+	 * @throws SQLException
+	 */
+	public ArrayList<Double> getExpenses(String name, int month) throws SQLException {
 		
 		String query = "select * from wallettracker.expense_history where Month(issueDate) = "
 				+ "? and accName =?;" ;
 		PreparedStatement prQuery = null;
+		ArrayList<Double> expenses = new ArrayList<Double>();
 		
-		
-		try {
-			prQuery = this.con.getConnection().prepareStatement(query);
-			prQuery.setInt(1, month);
-			prQuery.setString(2, name);
+
+		prQuery = this.con.getConnection().prepareStatement(query);
+		prQuery.setInt(1, month);
+		prQuery.setString(2, name);
 			
-			ResultSet rs = prQuery.executeQuery();
+		ResultSet rs = prQuery.executeQuery();
 			
-			while (rs.next()) {
-				System.out.println(rs.getDouble("ammount"));
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		while (rs.next()) {
+			expenses.add(rs.getDouble("amount"));
+		}
+			
+		return expenses;
+				
 	}
 	
 	/**
@@ -57,10 +67,12 @@ public class DBResultSetHandler extends DBConnector {
 	 * Returns the account balance for given account name
 	 * @param accName
 	 * @throws SQLException
+	 * @return double balance
 	 */
 	
-	public void getCurrentBalance(String accName) throws SQLException {
+	public double getCurrentBalance(String accName) throws SQLException {
 		
+		double balance;
 		PreparedStatement prQuery = null;
 		String query = "select accBalance from wallettracker.accounts where accName = ?";
 		
@@ -68,9 +80,11 @@ public class DBResultSetHandler extends DBConnector {
 		prQuery.setString(1, accName);
 		ResultSet rs = prQuery.executeQuery();
 		
-		while (rs.next()){
-			System.out.println(rs.getDouble("accBalance"));
-		}
+//		while (rs.next()){
+//			System.out.println(rs.getDouble("accBalance"));
+//		}
+		
+		return balance = rs.getDouble("accBalance");
 		
 	}
 	
@@ -93,13 +107,104 @@ public class DBResultSetHandler extends DBConnector {
 		}
 	}
 	
+	
+	/**
+	 * Returns the month of the last expense for a given user.
+	 * @param accName
+	 * @return
+	 * @throws SQLException
+	 */
+	
+	public int getLastExpenseMonth(String accName) throws SQLException {
+		
+		int lastMonth = 0;
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "select Month(issueDate) from expense_history where accName = ?"
+				+ "order by issueDate desc limit 1";
+		
+		prStatement = this.con.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		ResultSet rs = prStatement.executeQuery();
+		
+		while (rs.next()){
+			lastMonth = rs.getInt("Month(issueDate)");
+
+		}
+		return lastMonth;
+		
+	}
+	
+	/**
+	 * Returns an ArrayList with all the expenses for the given accName.
+	 * @param accName
+	 * @return
+	 * @throws SQLException
+	 */
+	
+	public ArrayList<Double> getUserExpenses(String accName) throws SQLException {
+		
+		ArrayList<Double> values = new ArrayList<Double>();
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "select amount from wallettracker.expenses_history where name = ?";
+		
+		prStatement = this.con.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		ResultSet rs = prStatement.executeQuery();
+		
+		while (rs.next()){
+			
+			values.add(rs.getDouble("amount"));
+		}
+		
+		return values;
+		
+	}
+	
+	
+	public void getUserExpensesByPeriod(String accName, OVERVIEW_PERIOD Period) throws SQLException {
+		
+		int lastMonth = getLastExpenseMonth(accName);
+		double balance_user = getCurrentBalance(accName);
+		ArrayList<Double> expenses = new ArrayList<Double>();
+		
+		switch(Period) {
+		
+		case THREE_MONTHS: 
+			
+		case SIX_MONTHS:
+		case ONE_YEAR:
+		case FIVE_YEARS:
+		case MAX:
+		}
+		
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "select amount,issueDate from wallettracker.expense_history where accName = ?"
+				+ "order by issueDate desc;";
+		
+		prStatement = this.con.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		ResultSet rs = prStatement.executeQuery();
+		
+		while (rs.next()){
+			//expenses.add(rs.getDouble("amount"));
+			System.out.println(rs.getDate("issueDate"));
+		}
+		
+		
+	}
+	
+	
+	
 	public static void main(String args[]) throws SQLException {
 		
 		DBResultSetHandler rsHandler = new DBResultSetHandler();
-		//rsHandler.getExpenses("test", 3, 2011);
 		rsHandler.getCurrentAccounts();
-		rsHandler.getCurrentBalance("nako");
 		rsHandler.getCurrentBalanceAll();
+		System.out.println(rsHandler.getLastExpenseMonth("nako"));
+		//rsHandler.getUserExpensesByPeriod("nako", OVERVIEW_PERIOD.SIX_MONTHS);
 	}
 
 }

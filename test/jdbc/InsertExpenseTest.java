@@ -14,7 +14,7 @@ public class InsertExpenseTest extends DBHandling {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 
-		handler.insertNewExpense("nako", 200, date );
+		handler.insertNewExpense("nako", 400, date );
 
 	}
 
