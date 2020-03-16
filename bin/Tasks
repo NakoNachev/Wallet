@@ -22,7 +22,7 @@ TODO:
 
 ## Updating data ##
 
-1. change value of balance for users having expense_history
+1. change value of balance for users having expense_history <-- needs stored procedure in sql
 2. 
 
 ## Features to be added afterwards ##
@@ -37,4 +37,7 @@ TODO:
 1. average expenses montly
 2. average expenses montly type based / not fixed costs / 
 3. balance overview - 3,6,12,36 m
+
+
+
 4. 

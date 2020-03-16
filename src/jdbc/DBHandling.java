@@ -20,6 +20,7 @@ public class DBHandling extends DBConnector {
 	PreparedStatement prInsertExpense = null;
 	
 	
+	
 	/**
 	 * Class for inserting new accounts in the database
 	 * 

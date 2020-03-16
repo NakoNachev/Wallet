@@ -48,10 +48,29 @@ public class DBResultSetHandler extends DBConnector {
 	}
 	
 	/**
-	 * Returns all the account names currently available at the accounts table
+	 * Returns all the account names currently available at the accounts table as a
+	 * String array.
 	 * @throws SQLException
 	 */
-	public void getCurrentAccounts() throws SQLException {
+	public ArrayList<String> getCurrentAccounts() throws SQLException {
+		
+		String query = "select * from wallettracker.accounts";
+		ArrayList<String> accNames = new ArrayList<String>();
+
+			ResultSet rs = this.con.getStatement().executeQuery(query);
+			while (rs.next()) {
+				
+				accNames.add(rs.getString("accName"));
+			}
+			
+		return accNames;
+	}
+	
+	/**
+	 * Prints out all current accounts in the database.
+	 * @throws SQLException
+	 */
+	public void displayCurrentAccounts() throws SQLException {
 		
 		String query = "select * from wallettracker.accounts";
 		
@@ -62,6 +81,28 @@ public class DBResultSetHandler extends DBConnector {
 				System.out.println(rs.getString("accName"));
 			}
 	}
+	
+	/**
+	 * Checks the db for existing account names, if exists, returns true.
+	 * @param accName
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean checkAccountExistance(String accName) throws SQLException {
+		
+		boolean accountExists = false;
+		ArrayList<String> existingAccounts = getCurrentAccounts();
+		
+		for (String acc: existingAccounts) {
+			if (acc == accName) {
+				accountExists = true;
+			}
+		}
+		
+		
+		return accountExists;
+	}
+	
 	
 	/**
 	 * Returns the account balance for given account name
@@ -200,10 +241,10 @@ public class DBResultSetHandler extends DBConnector {
 	
 	public static void main(String args[]) throws SQLException {
 		
-		DBResultSetHandler rsHandler = new DBResultSetHandler();
-		rsHandler.getCurrentAccounts();
-		rsHandler.getCurrentBalanceAll();
-		System.out.println(rsHandler.getLastExpenseMonth("nako"));
+//		DBResultSetHandler rsHandler = new DBResultSetHandler();
+//		rsHandler.getCurrentAccounts();
+//		rsHandler.getCurrentBalanceAll();
+//		System.out.println(rsHandler.getLastExpenseMonth("nako"));
 		//rsHandler.getUserExpensesByPeriod("nako", OVERVIEW_PERIOD.SIX_MONTHS);
 	}
 
