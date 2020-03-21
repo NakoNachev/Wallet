@@ -50,6 +50,11 @@ public class ConsoleMainStart {
 		
 	}
 	
+	/**
+	 * Second option of the main menu for logging into a account.
+	 * @throws SQLException
+	 */
+	
 	public void menuOption2() throws SQLException {
 		
 		String desiredAccount;

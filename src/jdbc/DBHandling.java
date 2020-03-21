@@ -17,18 +17,16 @@ public class DBHandling extends DBConnector {
 	DBConnector connector = new DBConnector();
 	
 	PreparedStatement prInsertNewUser = null;
-	PreparedStatement prInsertExpense = null;
-	
-	
-	
+	PreparedStatement prInsertExpense = null;	
+	DBResultSetHandler rshandler = new DBResultSetHandler();
+
 	/**
-	 * Class for inserting new accounts in the database
+	 * Class for inserting new accounts into the database.
 	 * 
 	 * @param accName 
 	 * @param accBalance
 	 * @param accDebt
-	 */
-	
+	 */	
 	public void insertNewUser(String accName, double accBalance, double accDebt) {
 
 		String insert = "insert into wallettracker.accounts values (?,?,?)";
@@ -84,5 +82,36 @@ public class DBHandling extends DBConnector {
 		}	
 	}
 	
+	
+	
+	/**
+	 * Updates the current balance of given user. Needed for when the user enters some type
+	 * of income.
+	 * @param accName
+	 * @param amount
+	 * @throws SQLException
+	 */
+	
+	public void updateBalance(String accName, double amount) throws SQLException {
+		
+		double currentBalance = rshandler.getCurrentBalance(accName);
+		double newBalance = currentBalance + amount;
+		
+		String prQuery = "update wallettracker.accounts set accBalance = ? where accName = ?";
+		PreparedStatement prStatement = null;
+		
+		prStatement = connector.getConnection().prepareStatement(prQuery);
+		prStatement.setDouble(1, newBalance);
+		prStatement.setString(2, accName);
+		prStatement.executeUpdate();
+	}
+	
+	
+	
 
+	public static void main (String args[]) throws SQLException {
+		
+		DBHandling dbhandler = new DBHandling();
+		dbhandler.updateBalance("nako", 300.00);
+	}
 }
