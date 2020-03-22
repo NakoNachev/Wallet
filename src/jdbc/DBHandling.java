@@ -26,12 +26,13 @@ public class DBHandling extends DBConnector {
 	 * @param accName 
 	 * @param accBalance
 	 * @param accDebt
+	 * @throws SQLException 
 	 */	
-	public void insertNewUser(String accName, double accBalance, double accDebt) {
+	public void insertNewUser(String accName, double accBalance, double accDebt) throws SQLException {
 
 		String insert = "insert into wallettracker.accounts values (?,?,?)";
 		
-		try {
+//		try {
 			this.prInsertNewUser = connector.getConnection().prepareStatement(insert);
 			this.prInsertNewUser.setString(1, accName);
 			this.prInsertNewUser.setDouble(2, accBalance);
@@ -41,24 +42,28 @@ public class DBHandling extends DBConnector {
 			
 			connector.getConnection().close();
 			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	
 	}
 	
 	/**
-	 * Inserting outgoing expenses for user, amount and the date in the DB.
+	 * Inserting outgoing expenses for user, amount and the date in the DB. Uses a user-defined
+	 * date, by converting it to java.sql.Date.
 	 * 
 	 * @param accName
 	 * @param ammount
 	 * @param date
 	 */
 	
-	public void insertNewExpense(String accName, double amount, java.sql.Date date) {
+	public void insertNewExpense(String accName, double amount, java.util.Date date) {
 		
 		String insertQuerry = "insert into wallettracker.expense_history values (?,?,?)";
+		
+		java.sql.Date dateSQL = new java.sql.Date(date.getTime());
+		
 		
 //		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 //		Date dateWithoutTime = new Date();
@@ -68,6 +73,31 @@ public class DBHandling extends DBConnector {
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
+		
+		try {
+			this.prInsertExpense = connector.getConnection().prepareStatement(insertQuerry);
+			this.prInsertExpense.setString(1, accName);
+			this.prInsertExpense.setDouble(2, amount);
+			//this.prInsertExpense.setDate(3, (java.sql.Date) dateWithoutTime);
+			this.prInsertExpense.setDate(3,dateSQL);
+			this.prInsertExpense.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	
+	/**
+	 *Inserts new expense in the database using the current date. 
+	 * @param accName
+	 * @param amount
+	 * @param date
+	 */
+	
+	public void insertNewExpense(String accName, double amount, java.sql.Date date) {
+		
+		String insertQuerry = "insert into wallettracker.expense_history values (?,?,?)";
+		date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 		
 		try {
 			this.prInsertExpense = connector.getConnection().prepareStatement(insertQuerry);
@@ -106,12 +136,32 @@ public class DBHandling extends DBConnector {
 		prStatement.executeUpdate();
 	}
 	
+	public void deleteExpense(String accName,java.util.Date date){
+		
+	}
+	
+	
+	public void setBalance(String accName, double amount){
+		
+	}
+	
+	public void setDebt(String accName, double amount){
+		
+		
+	}
+	
+	public void deleteUser(String accName) {
+		
+	}
+	
+	
 	
 	
 
 	public static void main (String args[]) throws SQLException {
 		
 		DBHandling dbhandler = new DBHandling();
-		dbhandler.updateBalance("nako", 300.00);
+		dbhandler.insertNewUser("nako", 0, 0);
+		//dbhandler.updateBalance("nako", 300.00);
 	}
 }
