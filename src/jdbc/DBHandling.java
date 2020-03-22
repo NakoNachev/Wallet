@@ -1,6 +1,7 @@
 package jdbc;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -136,22 +137,77 @@ public class DBHandling extends DBConnector {
 		prStatement.executeUpdate();
 	}
 	
-	public void deleteExpense(String accName,java.util.Date date){
+	public void deleteExpense(String accName,java.util.Date date) throws SQLException{
+		
+		java.sql.Date dateSQL = new java.sql.Date(date.getTime());
+		PreparedStatement prStatement = null;
+		String prQuery = "delete from wallettracker.accounts where accName = ? and issueDate= ?";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.setDate(2, dateSQL);
+		prStatement.executeUpdate();
+	}
+	
+	
+	public void setBalance(String accName, double amount) throws SQLException{
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "update wallettracker.accounts set accBalance = ? where accName = ?";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setDouble(1, amount);
+		prStatement.setString(2, accName);
+		prStatement.executeUpdate();
+	}
+	
+	public void setDebt(String accName, double amount) throws SQLException{
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "update wallettracker.accounts set accDebt = ? where accName = ?";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setDouble(1, amount);
+		prStatement.setString(2, accName);
+		prStatement.executeUpdate();
+		
 		
 	}
 	
 	
-	public void setBalance(String accName, double amount){
+	public void deleteUser(String accName) throws SQLException {
 		
+		PreparedStatement prStatement = null;
+		String prQuery = "delete from wallettracker.accounts where accName = ?";
+		
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.executeUpdate();
 	}
 	
-	public void setDebt(String accName, double amount){
-		
-		
+	public void changeExpenseValue(String accName, java.util.Date date){
+		// change the value of the expense amount for a specific expense
 	}
 	
-	public void deleteUser(String accName) {
+	public void changeAccountName(String accName, String newName) throws SQLException{
 		
+		// check if another account with the new name exists
+		// meaning newName != to a existing name
+		
+		if (rshandler.checkAccountExistance(newName) == true){
+			System.out.println("The given new name already exists, please choose another!");
+		}
+		else {
+			
+			PreparedStatement prStatement = null;
+			String prQuery = "update wallettracker.accounts set accName = ? where accName = ?";
+			
+			prStatement = this.connector.getConnection().prepareStatement(prQuery);
+			prStatement.setString(1, newName);
+			prStatement.setString(2, accName);
+			prStatement.executeUpdate();
+		}
 	}
 	
 	
@@ -161,7 +217,9 @@ public class DBHandling extends DBConnector {
 	public static void main (String args[]) throws SQLException {
 		
 		DBHandling dbhandler = new DBHandling();
-		dbhandler.insertNewUser("nako", 0, 0);
+		//dbhandler.insertNewUser("nako", 0, 0);
+		dbhandler.deleteUser("ceco");
+		dbhandler.changeAccountName("bako", "nako");
 		//dbhandler.updateBalance("nako", 300.00);
 	}
 }
