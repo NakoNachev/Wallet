@@ -95,12 +95,16 @@ public class DBResultSetHandler extends DBConnector {
 		boolean accountExists = false;
 		ArrayList<String> existingAccounts = getCurrentAccounts();
 		
+		
+		
+		
 		for (String acc: existingAccounts) {
-			if (acc == accName) {
+			if (acc.equals(accName)) {
 				accountExists = true;
 			}
-		}	
-		return accountExists;
+		}
+		return accountExists;	
+		
 	}
 	
 	
@@ -471,6 +475,14 @@ public class DBResultSetHandler extends DBConnector {
 			+ rsHandler.getTotalExpensesUser("nako", 3, 2020) + rsHandler.getTotalExpensesUser("nako", 2, 2020);
 		
 		System.out.println(total);
+		System.out.println(rsHandler.checkAccountExistance("nako"));
+		
+		ArrayList<String> test = new ArrayList<String>();
+		test = rsHandler.getCurrentAccounts();
+		
+		for (String acc: test){
+			System.out.println(acc);
+		}
 		//rsHandler.getUserExpensesByPeriod("nako", OVERVIEW_PERIOD.SIX_MONTHS);
 	}
 
