@@ -149,7 +149,12 @@ public class DBHandling extends DBConnector {
 		prStatement.executeUpdate();
 	}
 	
-	
+	/**
+	 * Sets the value for the balance of a given user.
+	 * @param accName
+	 * @param amount
+	 * @throws SQLException
+	 */
 	public void setBalance(String accName, double amount) throws SQLException{
 		
 		PreparedStatement prStatement = null;
@@ -170,8 +175,7 @@ public class DBHandling extends DBConnector {
 		prStatement.setDouble(1, amount);
 		prStatement.setString(2, accName);
 		prStatement.executeUpdate();
-		
-		
+	
 	}
 	
 	
@@ -208,6 +212,32 @@ public class DBHandling extends DBConnector {
 			prStatement.setString(2, accName);
 			prStatement.executeUpdate();
 		}
+	}
+	
+	/* Adds new income to the database and updates the current balance of the user.
+	 * 
+	 * 
+	 */
+	public void addNewIncome(String accName, double amount, java.util.Date issueDate ) throws SQLException {
+		
+		PreparedStatement prStatement = null;
+		java.sql.Date sqlDate = new java.sql.Date(issueDate.getTime());
+		
+		String prQuery = "insert into wallettracker.income values (?,?,?) ";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.setDouble(2, amount);
+		prStatement.setDate(3, sqlDate);
+		
+		prStatement.executeUpdate();
+		
+		// update balance with the new income
+		
+		updateBalance(accName,amount);
+		
+		this.connector.getConnection().close();
+		
 	}
 	
 	

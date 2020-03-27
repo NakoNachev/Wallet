@@ -95,9 +95,6 @@ public class DBResultSetHandler extends DBConnector {
 		boolean accountExists = false;
 		ArrayList<String> existingAccounts = getCurrentAccounts();
 		
-		
-		
-		
 		for (String acc: existingAccounts) {
 			if (acc.equals(accName)) {
 				accountExists = true;
@@ -133,6 +130,28 @@ public class DBResultSetHandler extends DBConnector {
 		this.con.getConnection().close();
 		
 		return balance;
+		
+	}
+	
+	public double getCurrentDebt(String accName) throws SQLException {
+		
+		double debt = 0.00;
+		PreparedStatement prQuery = null;
+		String query = "select accDebt from wallettracker.accounts where accName = ?";
+		
+		prQuery = this.con.getConnection().prepareStatement(query);
+		prQuery.setString(1, accName);
+		ResultSet rs = prQuery.executeQuery();
+		
+		while (rs.next()){
+			debt = rs.getDouble("accBalance");
+		}
+		rs.close();
+		prQuery.close();
+		this.con.getConnection().close();
+		
+		return debt;
+		
 		
 	}
 	
@@ -231,6 +250,35 @@ public class DBResultSetHandler extends DBConnector {
 		while (rs.next()){
 			
 			values.add(rs.getDouble("amount"));
+		}
+		
+		rs.close();
+		prStatement.close();
+		this.con.getConnection().close();
+		
+		return values;
+		
+	}
+	/**
+	 * Returns a list with all the dates from the expenses of a given user.
+	 * @param accName
+	 * @return
+	 * @throws SQLException
+	 */
+	public ArrayList<java.sql.Date> getUserExpenseDates(String accName) throws SQLException {
+		
+		ArrayList<java.sql.Date> values = new ArrayList<java.sql.Date>();
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "select issueDate from wallettracker.expense_history where accName = ?";
+		
+		prStatement = this.con.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		ResultSet rs = prStatement.executeQuery();
+		
+		while (rs.next()){
+			
+			values.add(rs.getDate("issueDate"));
 		}
 		
 		rs.close();
@@ -468,21 +516,6 @@ public class DBResultSetHandler extends DBConnector {
 		System.out.println(rsHandler.getLastExpenseMonth("nako"));
 		System.out.println(rsHandler.getLastExpenseYear("nako"));
 		
-		
-		double total = 0;
-		
-		total = total + rsHandler.getTotalExpensesUser("nako", 4, 2020)
-			+ rsHandler.getTotalExpensesUser("nako", 3, 2020) + rsHandler.getTotalExpensesUser("nako", 2, 2020);
-		
-		System.out.println(total);
-		System.out.println(rsHandler.checkAccountExistance("nako"));
-		
-		ArrayList<String> test = new ArrayList<String>();
-		test = rsHandler.getCurrentAccounts();
-		
-		for (String acc: test){
-			System.out.println(acc);
-		}
 		//rsHandler.getUserExpensesByPeriod("nako", OVERVIEW_PERIOD.SIX_MONTHS);
 	}
 
