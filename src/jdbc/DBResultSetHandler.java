@@ -502,6 +502,89 @@ public class DBResultSetHandler extends DBConnector {
 		
 	}
 	
+	public ArrayList<Double> getPeriodExpenses(String accName, OVERVIEW_PERIOD Period) throws SQLException {
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "";
+		ArrayList<Double> expenses = new ArrayList<Double>();
+		
+		switch(Period) {
+		
+		case THREE_MONTHS: 
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 3 month and"
+					+ "accName = ?";
+		case SIX_MONTHS:
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 6 month and"
+					+ "accName = ?";
+		case ONE_YEAR:
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 12 month and"
+					+ "accName = ?";
+		case FIVE_YEARS:
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 5 year and"
+					+ "accName = ?";
+		case MAX:
+			// find sql query
+		
+		}
+		prStatement = this.con.getConnection().prepareStatement(prQuery);
+		
+		prStatement.setString(1, accName);
+		ResultSet rs = prStatement.executeQuery();
+		
+		while (rs.next()) {
+			expenses.add(rs.getDouble("amount"));
+		}
+		
+		return expenses;
+
+	}
+	
+	public ArrayList<java.sql.Date> getPeriodDates(String accName, OVERVIEW_PERIOD Period) throws SQLException {
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "";
+		ArrayList<java.sql.Date> dates = new ArrayList<java.sql.Date>();
+		
+		switch(Period) {
+		
+		case THREE_MONTHS: 
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 3 month and"
+					+ "accName = ?";
+		case SIX_MONTHS:
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 6 month and"
+					+ "accName = ?";
+		case ONE_YEAR:
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 12 month and"
+					+ "accName = ?";
+		case FIVE_YEARS:
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 5 year and"
+					+ "accName = ?";
+		case MAX:
+			// find sql query
+		
+		}
+		prStatement = this.con.getConnection().prepareStatement(prQuery);
+		
+		prStatement.setString(1, accName);
+		ResultSet rs = prStatement.executeQuery();
+		
+		while (rs.next()) {
+			dates.add(rs.getDate("issueDate"));
+		}
+		
+		return dates;
+		
+	}
+	
+	public void displayPeriodData(String accName, OVERVIEW_PERIOD Period) throws SQLException {
+		
+		ArrayList<Double> expenses = getPeriodExpenses(accName,Period);
+		ArrayList<java.sql.Date> dates = getPeriodDates(accName,Period);
+		
+		
+	}
+	
+	
 	public static void main(String args[]) throws SQLException {
 		
 		DBResultSetHandler rsHandler = new DBResultSetHandler();

@@ -63,3 +63,8 @@ TODO:
 
 
 
+
+select * from wallettracker.expense_history
+where issueDate >= now()-interval 6 month;
+
+

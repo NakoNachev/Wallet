@@ -313,7 +313,7 @@ public class ConsoleMainStart {
 		date = new Date(month + "/" + day + "/" + year);
 		
 		if (checkIfExpenseInsert) {
-			dbhandler.insertNewExpense(accName, amount, date);
+			dbhandler.insertNewExpense(name, amount, date);
 			displaySubMenu();
 			subMenuInputController(accName);
 		}
