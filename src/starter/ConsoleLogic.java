@@ -1,4 +1,4 @@
-package users;
+package starter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import jdbc.DBHandling;
 import jdbc.DBResultSetHandler;
+import jdbc.OVERVIEW_PERIOD;
 
 
 /**
@@ -14,22 +15,8 @@ import jdbc.DBResultSetHandler;
  * 
  *
  */
-public class ConsoleMainStart {
-	
-	public enum OPTIONS {
-		
-		VIEW_BALANCE,
-		VIEW_BALANCE_PERIOD,
-		VIEW_CREDIT,
-		VIEW_EXPENSES_PERIOD,
-		VIEW_EXPENSES,
-		ADD_EXPENSE,
-		ADD_INCOME,
-		LOG_ACCOUNT,
-		REG_ACCOUNT
-	}
-	
-	
+public class ConsoleLogic {
+
 	Scanner input = new Scanner(System.in);
 	DBHandling dbhandler = new DBHandling();
 	DBResultSetHandler rshandler = new DBResultSetHandler();
@@ -85,6 +72,7 @@ public class ConsoleMainStart {
 		
 		case 1:
 			mainMenuOption1();
+			mainMenuInputController();
 			break;
 		case 2:
 			String acc = mainMenuOption2();
@@ -123,6 +111,7 @@ public class ConsoleMainStart {
 		}
 		
 		System.out.println();
+		dbhandler.insertNewUser(desiredAccount);
 		System.out.print("Account "+ desiredAccount + " was registered successfully!");
 	}
 	
@@ -165,10 +154,10 @@ public class ConsoleMainStart {
 		System.out.println("2.1 Check balance.");
 		System.out.println("2.2 Check overview period.");
 		System.out.println("2.3 Check debt.");
-		System.out.println("2.4 Display expenses for a period.");
-		System.out.println("2.5 Display all expenses till now.");
-		System.out.println("2.6 Add new expense.");
-		System.out.println("2.7 Add new income.");
+		System.out.println("2.4 Display all expenses till now.");
+		System.out.println("2.5 Add new expense.");
+		System.out.println("2.6 Add new income.");
+		System.out.println("2.7 Exit user.");
 		
 	}
 	
@@ -206,35 +195,93 @@ public class ConsoleMainStart {
 			subMenuOption1(accName);
 			break;
 		case 2:
-			subMenuOption2();
+			subMenuOption2(accName);
 			break;
 		case 3:
 			subMenuOption3(accName);
 			break;
 		case 4:
-			subMenuOption4();
+			subMenuOption4(accName);;
 			break;
 		case 5:
-			subMenuOption5(accName);
+			subMenuOption5(accName,true);
 			break;
 		case 6:
-			subMenuOption6(accName,true);
+			subMenuOption6(accName);
 			break;
 		case 7:
-			subMenuOption7(accName);
+			displayMainMenu();
+			mainMenuInputController();
 			break;
+
 			
 		}
 	}
 	
 	public void subMenuOption1(String accName) throws SQLException, InterruptedException {
 		
+		System.out.println();
 		System.out.println("Current balance is: "+ rshandler.getCurrentBalance(accName));
 		displaySubMenu();
 		subMenuInputController(accName);
+		System.out.println();
 	}
 	
-	public void subMenuOption2() {
+	public void subMenuOption2(String accName) throws SQLException, InterruptedException {
+		
+		System.out.println();
+		System.out.println("Please choose the period you want to display: ");
+		System.out.println("2.2.1 Three months back. "
+				+ "2.2.2 Six months back."
+				+ "2.2.3 One year back."
+				+ "2.2.4 Five years back.");
+		int userChoice;
+		do {
+			try {
+				System.out.println();
+				System.out.print("Choose between 1 .. 4: ");
+				String inputValue = input.next();
+				userChoice = Integer.parseInt(inputValue);
+				
+				
+					while(userChoice != 1 & userChoice != 2 & userChoice != 3 & userChoice != 4){
+						System.out.println();
+						System.out.println("Should be between 1 .. 4!");
+						inputValue = input.next();
+						userChoice = Integer.parseInt(inputValue);
+						break;
+					}
+				break;
+				
+			} catch (Exception e){
+				System.out.println("Value not accepted, try again: ");
+			}
+		}while (true);
+		
+		switch(userChoice){
+			
+		case 1:
+			rshandler.displayPeriodData(accName, OVERVIEW_PERIOD.THREE_MONTHS);
+			displaySubMenu();
+			subMenuInputController(accName);
+			break;
+		case 2:
+			rshandler.displayPeriodData(accName, OVERVIEW_PERIOD.SIX_MONTHS);
+			displaySubMenu();
+			subMenuInputController(accName);
+			break;
+		case 3:
+			rshandler.displayPeriodData(accName, OVERVIEW_PERIOD.ONE_YEAR);
+			displaySubMenu();
+			subMenuInputController(accName);
+			break;
+		case 4:
+			rshandler.displayPeriodData(accName, OVERVIEW_PERIOD.FIVE_YEARS);
+			displaySubMenu();
+			subMenuInputController(accName);
+			break;
+			
+		}
 		
 	}
 	
@@ -245,12 +292,8 @@ public class ConsoleMainStart {
 		subMenuInputController(accName);
 	}
 
-	public void subMenuOption4() {
-	
-		
-	}
 
-	public void subMenuOption5(String accName) throws SQLException, InterruptedException {
+	public void subMenuOption4(String accName) throws SQLException, InterruptedException {
 		
 		System.out.println();
 		ArrayList<Double> expense = rshandler.getUserExpenses(accName);
@@ -280,7 +323,8 @@ public class ConsoleMainStart {
 	 * @throws SQLException
 	 * @throws InterruptedException 
 	 */
-	public void subMenuOption6(String accName, boolean isExpense) throws SQLException, InterruptedException {
+	@SuppressWarnings("deprecation")
+	public void subMenuOption5(String accName, boolean isExpense) throws SQLException, InterruptedException {
 	
 		String name = accName;
 		double amount;
@@ -324,15 +368,15 @@ public class ConsoleMainStart {
 		}
 	}
 
-	public void subMenuOption7(String accName) throws SQLException, InterruptedException {
+	public void subMenuOption6(String accName) throws SQLException, InterruptedException {
 	
-		subMenuOption6(accName,false);
+		subMenuOption5(accName,false);
 		
 }
 
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		// TODO Auto-generated method stub
-		ConsoleMainStart starter = new ConsoleMainStart();
+		ConsoleLogic starter = new ConsoleLogic();
 		starter.startApp();
 		
 	}

@@ -144,7 +144,7 @@ public class DBResultSetHandler extends DBConnector {
 		ResultSet rs = prQuery.executeQuery();
 		
 		while (rs.next()){
-			debt = rs.getDouble("accBalance");
+			debt = rs.getDouble("accDebt");
 		}
 		rs.close();
 		prQuery.close();
@@ -466,42 +466,7 @@ public class DBResultSetHandler extends DBConnector {
 		}
 		return total;
 	}
-	
-	
-	
-	public void getUserExpensesByPeriod(String accName, OVERVIEW_PERIOD Period) throws SQLException {
-		
-		int lastMonth = getLastExpenseMonth(accName);
-		double balance_user = getCurrentBalance(accName);
-		ArrayList<Double> expenses = new ArrayList<Double>();
-		
-		switch(Period) {
-		
-		case THREE_MONTHS: 
-			
-		case SIX_MONTHS:
-		case ONE_YEAR:
-		case FIVE_YEARS:
-		case MAX:
-		}
-		
-		
-		PreparedStatement prStatement = null;
-		String prQuery = "select amount,issueDate from wallettracker.expense_history where accName = ?"
-				+ "order by issueDate desc;";
-		
-		prStatement = this.con.getConnection().prepareStatement(prQuery);
-		prStatement.setString(1, accName);
-		ResultSet rs = prStatement.executeQuery();
-		
-		while (rs.next()){
-			//expenses.add(rs.getDouble("amount"));
-			System.out.println(rs.getDate("issueDate"));
-		}
-		
-		
-	}
-	
+
 	public ArrayList<Double> getPeriodExpenses(String accName, OVERVIEW_PERIOD Period) throws SQLException {
 		
 		PreparedStatement prStatement = null;
@@ -511,17 +476,21 @@ public class DBResultSetHandler extends DBConnector {
 		switch(Period) {
 		
 		case THREE_MONTHS: 
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 3 month and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 3 month and "
 					+ "accName = ?";
+			break;
 		case SIX_MONTHS:
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 6 month and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 6 month and "
 					+ "accName = ?";
+			break;
 		case ONE_YEAR:
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 12 month and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 12 month and "
 					+ "accName = ?";
+			break;
 		case FIVE_YEARS:
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 5 year and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 5 year and "
 					+ "accName = ?";
+			break;
 		case MAX:
 			// find sql query
 		
@@ -548,17 +517,21 @@ public class DBResultSetHandler extends DBConnector {
 		switch(Period) {
 		
 		case THREE_MONTHS: 
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 3 month and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 3 month and "
 					+ "accName = ?";
+			break;
 		case SIX_MONTHS:
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 6 month and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 6 month and "
 					+ "accName = ?";
+			break;
 		case ONE_YEAR:
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 12 month and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 12 month and "
 					+ "accName = ?";
+			break;
 		case FIVE_YEARS:
-			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 5 year and"
+			prQuery = "select * from wallettracker.expense_history where issueDate >= now()-interval 5 year and "
 					+ "accName = ?";
+			break;
 		case MAX:
 			// find sql query
 		
@@ -575,12 +548,23 @@ public class DBResultSetHandler extends DBConnector {
 		return dates;
 		
 	}
-	
+	 /**
+	  * Displays all the expenses for a given period. Uses {@link getPeriodExpenses } and {@link getPeriodDates} .
+	  * @param accName
+	  * @param Period
+	  * @throws SQLException
+	  */
 	public void displayPeriodData(String accName, OVERVIEW_PERIOD Period) throws SQLException {
 		
 		ArrayList<Double> expenses = getPeriodExpenses(accName,Period);
 		ArrayList<java.sql.Date> dates = getPeriodDates(accName,Period);
 		
+		System.out.println();
+		System.out.println("Viewing data for "+ Period.toString().toLowerCase());
+		System.out.println();
+		for (int index = 0; index < expenses.size(); index ++) {
+			System.out.println("accName" + " | " + expenses.get(index) + " | " + dates.get(index));
+		}
 		
 	}
 	
@@ -589,15 +573,8 @@ public class DBResultSetHandler extends DBConnector {
 		
 		DBResultSetHandler rsHandler = new DBResultSetHandler();
 //		rsHandler.displayUserExpenseDataForMonth("nako",3,2020);
-//		System.out.println(rsHandler.getTotalExpensesUser("nako", 3, 2020));
-		System.out.println(rsHandler.getTotalExpensesUser("nako", 4, 2020));
-		System.out.println(rsHandler.getTotalExpensesUser("nako", 3, 2020));
-		System.out.println(rsHandler.getTotalExpensesUser("nako", 2, 2020));
-		System.out.println(rsHandler.getTotalExpensesUser("nako",OVERVIEW_PERIOD.THREE_MONTHS));
-		rsHandler.getCurrentBalanceAll();
-		rsHandler.displayUserExpenseDataForMonth("nako", 3, 2020);
-		System.out.println(rsHandler.getLastExpenseMonth("nako"));
-		System.out.println(rsHandler.getLastExpenseYear("nako"));
+
+		rsHandler.displayPeriodData("nako", OVERVIEW_PERIOD.SIX_MONTHS);
 		
 		//rsHandler.getUserExpensesByPeriod("nako", OVERVIEW_PERIOD.SIX_MONTHS);
 	}

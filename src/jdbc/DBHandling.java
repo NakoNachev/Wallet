@@ -1,12 +1,8 @@
 package jdbc;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 
 /**
@@ -21,8 +17,36 @@ public class DBHandling extends DBConnector {
 	PreparedStatement prInsertExpense = null;	
 	DBResultSetHandler rshandler = new DBResultSetHandler();
 
+	
+	public void insertNewUser(String accName) throws SQLException{
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "insert into wallettracker.accounts values (?,?,?)";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.setDouble(2, 0.0);
+		prStatement.setDouble(3, 0.0);
+		prStatement.executeUpdate();
+		
+	
+	}
+	
+	public void insertNewUser(String accName, double accBalance) throws SQLException{
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "insert into wallettracker.accounts values (?,?,?)";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.setDouble(2, accBalance);
+		prStatement.setDouble(3, 0.0);
+		prStatement.executeUpdate();
+
+	}
+	
 	/**
-	 * Class for inserting new accounts into the database.
+	 * method for inserting new accounts into the database.
 	 * 
 	 * @param accName 
 	 * @param accBalance
@@ -33,7 +57,7 @@ public class DBHandling extends DBConnector {
 
 		String insert = "insert into wallettracker.accounts values (?,?,?)";
 		
-//		try {
+
 			this.prInsertNewUser = connector.getConnection().prepareStatement(insert);
 			this.prInsertNewUser.setString(1, accName);
 			this.prInsertNewUser.setDouble(2, accBalance);
@@ -42,13 +66,9 @@ public class DBHandling extends DBConnector {
 			this.prInsertNewUser.executeUpdate();
 			
 			connector.getConnection().close();
-			
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	
+
 	}
+	
 	
 	/**
 	 * Inserting outgoing expenses for user, amount and the date in the DB. Uses a user-defined
@@ -241,15 +261,29 @@ public class DBHandling extends DBConnector {
 	}
 	
 	
-	
-	
+	/**
+	 * Sets the account information to the default values, meaning 0 debt and 0 balance.
+	 * @param accName
+	 * @throws SQLException
+	 */
+	public void resetUserData(String accName) throws SQLException{
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "update wallettracker.accounts set accBalance = 0.0 and accDebt = 0.0 where accName = ?";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.executeUpdate();
+		
+	}
 
 	public static void main (String args[]) throws SQLException {
 		
 		DBHandling dbhandler = new DBHandling();
 		//dbhandler.insertNewUser("nako", 0, 0);
-		dbhandler.deleteUser("ceco");
-		dbhandler.changeAccountName("bako", "nako");
+//		dbhandler.deleteUser("ceco");
+//		dbhandler.changeAccountName("bako", "nako");
+		dbhandler.insertNewUser("bako");
 		//dbhandler.updateBalance("nako", 300.00);
 	}
 }
