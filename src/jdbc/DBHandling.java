@@ -148,24 +148,49 @@ public class DBHandling extends DBConnector {
 		double currentBalance = rshandler.getCurrentBalance(accName);
 		double newBalance = currentBalance + amount;
 		
-		String prQuery = "update wallettracker.accounts set accBalance = ? where accName = ?";
-		PreparedStatement prStatement = null;
+//		String prQuery = "update wallettracker.accounts set accBalance = ? where accName = ?";
+//		PreparedStatement prStatement = null;
+//		
+//		prStatement = connector.getConnection().prepareStatement(prQuery);
+//		prStatement.setDouble(1, newBalance);
+//		prStatement.setString(2, accName);
+//		prStatement.executeUpdate();
 		
-		prStatement = connector.getConnection().prepareStatement(prQuery);
-		prStatement.setDouble(1, newBalance);
-		prStatement.setString(2, accName);
-		prStatement.executeUpdate();
+		setBalance(accName,newBalance);
 	}
 	
+	
+	/**
+	 * Deletes a given expense based on user and date.
+	 * @param accName
+	 * @param date
+	 * @throws SQLException
+	 */
 	public void deleteExpense(String accName,java.util.Date date) throws SQLException{
 		
 		java.sql.Date dateSQL = new java.sql.Date(date.getTime());
 		PreparedStatement prStatement = null;
-		String prQuery = "delete from wallettracker.accounts where accName = ? and issueDate= ?";
+		String prQuery = "delete from wallettracker.expense_history where accName = ? and issueDate= ?";
 		
 		prStatement = this.connector.getConnection().prepareStatement(prQuery);
 		prStatement.setString(1, accName);
 		prStatement.setDate(2, dateSQL);
+		prStatement.executeUpdate();
+	}
+	
+	/**
+	 * Deletes all the expenses from a given user till now.
+	 * @param accName
+	 * @throws SQLException
+	 */
+	public void deleteAllExpenses(String accName) throws SQLException {
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "delete from walletttracker.expense_history where accName = ?";
+		
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
 		prStatement.executeUpdate();
 	}
 	
@@ -277,13 +302,5 @@ public class DBHandling extends DBConnector {
 		
 	}
 
-	public static void main (String args[]) throws SQLException {
-		
-		DBHandling dbhandler = new DBHandling();
-		//dbhandler.insertNewUser("nako", 0, 0);
-//		dbhandler.deleteUser("ceco");
-//		dbhandler.changeAccountName("bako", "nako");
-		dbhandler.insertNewUser("bako");
-		//dbhandler.updateBalance("nako", 300.00);
-	}
+
 }

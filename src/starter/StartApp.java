@@ -8,6 +8,7 @@ public class StartApp {
 		
 		ConsoleLogic cLogic = new ConsoleLogic();
 		cLogic.startApp();
+                
 	}
 
 }

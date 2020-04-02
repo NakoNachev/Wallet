@@ -158,6 +158,8 @@ public class ConsoleLogic {
 		System.out.println("2.5 Add new expense.");
 		System.out.println("2.6 Add new income.");
 		System.out.println("2.7 Exit user.");
+		System.out.println("2.8 Change balance.");
+		System.out.println("2.9 Delete all expenses so far");
 		
 	}
 	
@@ -168,15 +170,15 @@ public class ConsoleLogic {
 		do {
 			try {
 				System.out.println();
-				System.out.print("Choose between 1 .. 7: ");
+				System.out.print("Choose between 1 .. 8: ");
 				String inputValue = input.next();
 				userChoice = Integer.parseInt(inputValue);
 				
 				
 					while(userChoice != 1 & userChoice != 2 & userChoice != 3 & userChoice != 4 & userChoice != 5 
-							& userChoice != 6 & userChoice != 7){
+							& userChoice != 6 & userChoice != 7 & userChoice != 8){
 						System.out.println();
-						System.out.println("Should be between 1 .. 7!");
+						System.out.println("Should be between 1 .. 8!");
 						inputValue = input.next();
 						userChoice = Integer.parseInt(inputValue);
 						break;
@@ -212,6 +214,9 @@ public class ConsoleLogic {
 		case 7:
 			displayMainMenu();
 			mainMenuInputController();
+			break;
+		case 8:
+			subMenuOption8(accName);
 			break;
 
 			
@@ -371,8 +376,35 @@ public class ConsoleLogic {
 	public void subMenuOption6(String accName) throws SQLException, InterruptedException {
 	
 		subMenuOption5(accName,false);
+	}
 		
-}
+	public void subMenuOption8(String accName) throws SQLException, InterruptedException {
+		
+		System.out.println();
+		System.out.println("Please enter the desired balance: ");
+		double amount;
+		
+		do {
+			try {
+				System.out.println();
+				System.out.print("Select the amount you want to insert: ");
+				String inputValue = input.next();
+				amount = Double.parseDouble(inputValue);
+				break;
+				
+			} catch (Exception e){
+				System.out.println("Please enter a number: ");
+			}
+		}while (true);
+
+		dbhandler.setBalance(accName, amount);
+		System.out.println("Balance changes successfully");
+		
+	}
+	
+	
+	
+		
 
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		// TODO Auto-generated method stub

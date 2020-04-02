@@ -568,15 +568,5 @@ public class DBResultSetHandler extends DBConnector {
 		
 	}
 	
-	
-	public static void main(String args[]) throws SQLException {
-		
-		DBResultSetHandler rsHandler = new DBResultSetHandler();
-//		rsHandler.displayUserExpenseDataForMonth("nako",3,2020);
-
-		rsHandler.displayPeriodData("nako", OVERVIEW_PERIOD.SIX_MONTHS);
-		
-		//rsHandler.getUserExpensesByPeriod("nako", OVERVIEW_PERIOD.SIX_MONTHS);
-	}
 
 }
