@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class DBConnector {
 	
-	private String driverClassName = "com.mysql.jdbc.Driver";	
+	//private String driverClassName = "com.mysql.jdbc.Driver";	
 	private String connectionURL = "jdbc:mysql://localhost:3306/";
 	private String dbName = "portfolio_management";
 	private String user = "root";

@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import jdbc.DBHandling;
 import jdbc.DBResultSetHandler;
+import jdbc.EXPENSE_TYPES;
 import jdbc.OVERVIEW_PERIOD;
 
 
@@ -338,6 +339,8 @@ public class ConsoleLogic {
 		int year;
 		java.util.Date date;
 		boolean checkIfExpenseInsert = isExpense;
+		EXPENSE_TYPES type = null;
+		int typeChoiceID;
 		
 		do {
 			try {
@@ -359,10 +362,14 @@ public class ConsoleLogic {
 		System.out.print("Select year: ");
 		year = input.nextInt();
 		
+		System.out.println("Please choose of the following expense types:");
+		type.printExpenseTypes();
+		typeChoiceID = input.nextInt();
+		
 		date = new Date(month + "/" + day + "/" + year);
 		
 		if (checkIfExpenseInsert) {
-			dbhandler.insertNewExpense(name, amount, date);
+			dbhandler.insertNewExpense(name, amount, date,typeChoiceID);
 			displaySubMenu();
 			subMenuInputController(accName);
 		}

@@ -79,31 +79,22 @@ public class DBHandling extends DBConnector {
 	 * @param date
 	 */
 	
-	public void insertNewExpense(String accName, double amount, java.util.Date date) {
+	public void insertNewExpense(String accName, double amount, java.util.Date date, int expenseTypeID) {
 		
-		String insertQuerry = "insert into wallettracker.expense_history values (?,?,?)";
+		String insertQuerry = "insert into wallettracker.expense_history values (?,?,?,?)";
 		
 		java.sql.Date dateSQL = new java.sql.Date(date.getTime());
-		
-		
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//		Date dateWithoutTime = new Date();
-//		try {
-//			dateWithoutTime  = sdf.parse(sdf.format(date));
-//		} catch (ParseException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 		
 		try {
 			this.prInsertExpense = connector.getConnection().prepareStatement(insertQuerry);
 			this.prInsertExpense.setString(1, accName);
 			this.prInsertExpense.setDouble(2, amount);
 			//this.prInsertExpense.setDate(3, (java.sql.Date) dateWithoutTime);
-			this.prInsertExpense.setDate(3,dateSQL);
+			this.prInsertExpense.setDate(3, dateSQL);
+			this.prInsertExpense.setInt(4, expenseTypeID);
+			
 			this.prInsertExpense.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
@@ -115,7 +106,7 @@ public class DBHandling extends DBConnector {
 	 * @param date
 	 */
 	
-	public void insertNewExpense(String accName, double amount, java.sql.Date date) {
+	public void insertNewExpense(String accName, double amount, java.sql.Date date, int expenseTypeID) {
 		
 		String insertQuerry = "insert into wallettracker.expense_history values (?,?,?)";
 		date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
@@ -126,9 +117,9 @@ public class DBHandling extends DBConnector {
 			this.prInsertExpense.setDouble(2, amount);
 			//this.prInsertExpense.setDate(3, (java.sql.Date) dateWithoutTime);
 			this.prInsertExpense.setDate(3,date);
+			this.prInsertExpense.setInt(4, expenseTypeID);
 			this.prInsertExpense.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
@@ -161,7 +152,8 @@ public class DBHandling extends DBConnector {
 	
 	
 	/**
-	 * Deletes a given expense based on user and date.
+	 * Deletes expense based on user and date.Caution, deletes all expenses for a given day, for more
+	 * precise deletion, use {@link deleteExpense}}
 	 * @param accName
 	 * @param date
 	 * @throws SQLException
@@ -170,13 +162,37 @@ public class DBHandling extends DBConnector {
 		
 		java.sql.Date dateSQL = new java.sql.Date(date.getTime());
 		PreparedStatement prStatement = null;
-		String prQuery = "delete from wallettracker.expense_history where accName = ? and issueDate= ?";
+		String prQuery = "delete from wallettracker.expense_history where accName = ? and issueDate= ?"
+				+ " and expenseID = ?";
 		
 		prStatement = this.connector.getConnection().prepareStatement(prQuery);
 		prStatement.setString(1, accName);
 		prStatement.setDate(2, dateSQL);
 		prStatement.executeUpdate();
 	}
+	
+	
+	/**
+	 * Deletes a given expense based on user,date and expenseTypeID.
+	 * @param accName
+	 * @param date
+	 * @throws SQLException
+	 */
+	public void deleteExpense(String accName,java.util.Date date, int expenseTypeID) throws SQLException{
+		
+		java.sql.Date dateSQL = new java.sql.Date(date.getTime());
+		PreparedStatement prStatement = null;
+		String prQuery = "delete from wallettracker.expense_history where accName = ? and issueDate= ?"
+				+ " and expenseID = ?";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.setDate(2, dateSQL);
+		prStatement.setInt(3, expenseTypeID);
+		prStatement.executeUpdate();
+	}
+	
+	
 	
 	/**
 	 * Deletes all the expenses from a given user till now.
@@ -191,6 +207,24 @@ public class DBHandling extends DBConnector {
 		
 		prStatement = this.connector.getConnection().prepareStatement(prQuery);
 		prStatement.setString(1, accName);
+		prStatement.executeUpdate();
+	}
+	
+	/**
+	 * Deletes all expenses for a user of a given type.
+	 * @param accName
+	 * @param expenseTypeID
+	 * @throws SQLException
+	 */
+	
+	public void deleteAllExpensesFromType(String accName, int expenseTypeID) throws SQLException{
+		
+		PreparedStatement prStatement = null;
+		String prQuery = "delete from wallettracker.expense_history where accName = ? and expenseID = ?";
+		
+		prStatement = this.connector.getConnection().prepareStatement(prQuery);
+		prStatement.setString(1, accName);
+		prStatement.setInt(2, expenseTypeID);
 		prStatement.executeUpdate();
 	}
 	
@@ -237,6 +271,10 @@ public class DBHandling extends DBConnector {
 	
 	public void changeExpenseValue(String accName, java.util.Date date){
 		// change the value of the expense amount for a specific expense
+	}
+	
+	public void changeExpenseValue(String accName, java.util.Date date, int expenseTypeID) {
+		//
 	}
 	
 	public void changeAccountName(String accName, String newName) throws SQLException{
